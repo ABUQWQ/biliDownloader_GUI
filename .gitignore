@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Local virtual environment
+.venv/
+venv/
+
+# Local reference sources (old/new upstream snapshots, not part of this fork)
+_sources/
+*.zip
+
+# Unused spec-workflow scaffolding
+.spec-workflow/
+
+# Runtime-generated data (not project source)
+temp/
+setting.conf
+%data_error%/
+%data_error%.html
+
+# Internal API adapter docs (kept local only)
+docs/API.md
+
+# Build artifacts
+build/
+dist/
+*.spec.bak

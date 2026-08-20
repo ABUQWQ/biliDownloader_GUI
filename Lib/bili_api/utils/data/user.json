@@ -1,0 +1,127 @@
+{
+  "get_login_url": {
+    "url": "https://passport.bilibili.com/x/passport-login/web/qrcode/generate",
+    "method": "GET",
+    "verify": false,
+    "params": null,
+    "return": {
+      "code": {
+        "0": "成功"
+      },
+      "ttl": 1,
+      "message": "请求信息",
+      "data": {
+        "url": "二维码内容url string",
+        "qrcode_key": "扫码登录密钥 string"
+      }
+    }
+  },
+  "get_login_data": {
+    "url": "https://passport.bilibili.com/x/passport-login/web/qrcode/poll",
+    "method": "GET",
+    "verify": false,
+    "params": {
+      "qrcode_key": "扫码登陆密钥 string"
+    },
+    "return": {
+      "code": "返回值 num",
+      "message": "错误信息",
+      "data": {
+        "timestamp": "登录时间",
+        "message": "状态信息",
+        "refresh_token": "刷新令牌",
+        "url": "游戏分站跨域登录 url",
+        "code": {
+          "0": "成功",
+          "86038": "密钥超时",
+          "86101": "未扫描",
+          "86090": "未确认"
+        }
+      }
+    }
+  },
+  "get_login_url_old": {
+    "url": "https://passport.bilibili.com/qrcode/getLoginUrl",
+    "method": "GET",
+    "verify": false,
+    "params": null,
+    "return": {
+      "code": {
+        "0": "成功"
+      },
+      "status": true,
+      "ts": "请求时间 num",
+      "data": {
+        "url": "二维码内容url string",
+        "oauthKey": "扫码登录秘钥 string"
+      }
+    }
+  },
+  "get_login_data_old": {
+    "url": "https://passport.bilibili.com/qrcode/getLoginInfo",
+    "method": "POST",
+    "verify": false,
+    "params": {
+      "oauthKey": "扫码登陆密钥 string",
+      "gourl": "跳转url string (非必要)"
+    },
+    "return": {
+      "code": "返回值 num",
+      "message": "错误信息",
+      "ts": "扫码时间",
+      "status": "扫码登录是否成功 bool",
+      "data": {
+        "obj": "成功",
+        "-1": "密钥错误",
+        "-2": "密钥超时",
+        "-4": "未扫描",
+        "-5": "未确认"
+      }
+    }
+  },
+  "nav": {
+    "url": "https://api.bilibili.com/x/web-interface/nav",
+    "method": "GET",
+    "verify": true,
+    "params": null,
+    "return": {
+      "code": {
+        "0": "成功",
+        "-101": "账号未登录"
+      },
+      "message": "错误信息",
+      "ttl": 1,
+      "data": {
+        "wbi_img": {
+          "img_url": "img_key",
+          "sub_url": "sub_key"
+        }
+      }
+    }
+  },
+  "exit": {
+    "url": "https://passport.bilibili.com/login/exit/v2",
+    "method": "POST",
+    "data_type": "application/x-www-form-urlencoded",
+    "verify": true,
+    "params": {
+      "biliCSRF": "CSRF Token (bili_jct)",
+      "gourl": "成功后跳转到的页面 (非必要)"
+    },
+    "return": {
+      "code": {
+        "0": "成功",
+        "2202": "csrf 请求非法"
+      },
+      "status": "是否成功 (bool)",
+      "ts": "时间戳",
+      "message": "错误信息 (成功时不存在)",
+      "data": [
+        "返回信息 (失败时不存在)",
+        {
+          "redirectUrl": "重定向链接"
+        }
+      ]
+    }
+  }
+}

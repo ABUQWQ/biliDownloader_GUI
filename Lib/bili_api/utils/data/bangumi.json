@@ -1,0 +1,99 @@
+{
+  "info": {
+    "url": "https://api.bilibili.com/pgc/review/user",
+    "method": "GET",
+    "verify": true,
+    "params": {
+      "media_id": "剧集mdid(md) num"
+    },
+    "return": {
+      "code": {
+        "0": "成功",
+        "-400": "请求错误",
+        "-404": "不存在"
+      },
+      "message": "错误信息",
+      "result": {}
+    }
+  },
+  "detailed_info": {
+    "url": "https://api.bilibili.com/pgc/view/web/season",
+    "method": "GET",
+    "verify": false,
+    "params": {
+      "season_id": "番剧ssid num",
+      "ep_id": "剧集epid num"
+    },
+    "return": {
+      "code": {
+        "0": "成功",
+        "-404": "错误"
+      },
+      "message": "返回信息",
+      "ttl": 1,
+      "result": {}
+    }
+  },
+  "bangumi_url": {
+    "url": "https://api.bilibili.com/pgc/player/web/v2/playurl",
+    "method": "GET",
+    "verify": true,
+    "params": {
+      "avid": "num",
+      "bvid": "str",
+      "cid": "num",
+      "qn": "num",
+      "fnver": 0,
+      "fnval": "num",
+      "fourk": "num"
+    },
+    "return": {
+      "code": {
+        "0": "成功",
+        "-400": "请求错误",
+        "-404": "无视频"
+      },
+      "message": "请求信息 str",
+      "result": "obj"
+    }
+  },
+  "bangumi_url_v2": {
+    "url": "https://api.bilibili.com/ogv/player/playview",
+    "method": "POST",
+    "data_type": "application/json",
+    "verify": true,
+    "params": {
+      "csrf": "CSRF验证数据 (bili_jct)"
+    },
+    "body": {
+      "exp_info": {
+        "ogv_half_pay": true
+      },
+      "player_param": {
+        "drm_tech_type": 2,
+        "fnval": "视频获取方式",
+        "fnver": 0
+      },
+      "scene": "normal",
+      "video_index": {
+        "bvid": null,
+        "cid": null,
+        "ogv_episode_id": "EP id int",
+        "ogv_season_id": "SS id int"
+      },
+      "video_param": {
+        "qn": 0
+      }
+    },
+    "return": {
+      "code": {
+        "0": "成功",
+        "-400": "请求错误",
+        "-404": "无视频"
+      },
+      "message": "请求信息 str",
+      "ttl": "未知",
+      "data": "obj"
+    }
+  }
+}
