@@ -1,14 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
-# 注意：pathex=['biliDownloader_GUI的绝对路径']
 
 block_cipher = None
 
 
-a = Analysis(['biliDownloader_GUI.py'],
-             pathex=['/Users/lzm/PycharmProjects/biliDownloader_GUI'],
+a = Analysis(['../biliDownloader_GUI.py'],
+             pathex=['..'],
              binaries=[],
-             datas=[],
-             hiddenimports=[],
+             datas=[('../Lib/bili_api/utils/data/*.json', 'Lib/bili_api/utils/data')],
+             hiddenimports=['brotli', 'zstandard', 'Crypto.Cipher.AES'],
              hookspath=[],
              hooksconfig={},
              runtime_hooks=[],
@@ -33,7 +32,7 @@ exe = EXE(pyz,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
-          entitlements_file=None , icon='images/bilidownloader.icns')
+          entitlements_file=None , icon='../UI/images/bilidownloader.icns')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -44,5 +43,5 @@ coll = COLLECT(exe,
                name='biliDownloader_GUI')
 app = BUNDLE(coll,
              name='biliDownloader_GUI.app',
-             icon='images/bilidownloader.icns',
+             icon='../UI/images/bilidownloader.icns',
              bundle_identifier=None)

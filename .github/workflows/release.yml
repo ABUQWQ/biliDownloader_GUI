@@ -1,0 +1,130 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "V*"
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to build and publish (e.g. V1.8.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Run offline unit tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run offline tests
+        run: python -m unittest discover -s tests -v
+
+  build-windows:
+    name: Build Windows package
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Build with PyInstaller
+        run: pyinstaller make/biliDownloader_WIN64.spec --noconfirm
+      - name: Package artifact
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist/biliDownloader_GUI/* -DestinationPath BiliDownloader_GUI_Windows_x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-package
+          path: BiliDownloader_GUI_Windows_x64.zip
+
+  build-linux:
+    name: Build Linux package
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Qt runtime system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libegl1 libxkbcommon0 libxcb-cursor0 \
+            libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 \
+            libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 libxcb-xfixes0 \
+            libdbus-1-3 libxcomposite1 libxdamage1
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Build with PyInstaller
+        run: pyinstaller make/biliDownloader_Ubuntu.spec --noconfirm
+      - name: Package artifact
+        run: tar -czf BiliDownloader_GUI_Linux_x64.tar.gz -C dist biliDownloader_GUI
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-package
+          path: BiliDownloader_GUI_Linux_x64.tar.gz
+
+  build-macos:
+    name: Build macOS package
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Build with PyInstaller
+        run: pyinstaller make/biliDownloader_MacOSX.spec --noconfirm
+      - name: Package artifact
+        run: |
+          cd dist
+          zip -r ../BiliDownloader_GUI_macOS.zip biliDownloader_GUI.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-package
+          path: BiliDownloader_GUI_macOS.zip
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Determine tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.tag.outputs.tag }}" \
+            artifacts/windows-package/BiliDownloader_GUI_Windows_x64.zip \
+            artifacts/linux-package/BiliDownloader_GUI_Linux_x64.tar.gz \
+            artifacts/macos-package/BiliDownloader_GUI_macOS.zip \
+            --title "BiliDownloader_GUI ${{ steps.tag.outputs.tag }}" \
+            --notes-file MIGRATION.md \
+            --repo "${{ github.repository }}"
