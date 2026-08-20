@@ -130,6 +130,8 @@ QComboBox:hover{
 	background: rgb(255, 238, 238)
 }
 QComboBox QAbstractItemView{
+	color: rgb(0, 0, 0);
+	background-color: rgb(255, 255, 255);
 	border: 2px solid rgb(255, 153, 153);
 	selection-background-color: rgb(255, 204, 153)
 }

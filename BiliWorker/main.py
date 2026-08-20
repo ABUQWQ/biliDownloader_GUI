@@ -524,7 +524,10 @@ class biliWorker(QThread):
                         input_v + '" -i "' + \
                         input_a + '" -strict unofficial -strict -2 -brand mp42 -c copy -y "' + output_add + '"'
         elif self.systemd == "linux":
-            ffcommand = 'ffmpeg -i "' + input_v + '" -i "' + input_a + '" -strict unofficial -strict -2 -brand mp42 -c copy -y "' + output_add + '"'
+            ffpath = os.path.dirname(os.path.realpath(sys.argv[0]))
+            ffcommand = '"' + ffpath + '/ffmpeg" -i "' + \
+                        input_v + '" -i "' + \
+                        input_a + '" -strict unofficial -strict -2 -brand mp42 -c copy -y "' + output_add + '"'
         elif self.systemd == "darwin":
             ffpath = os.path.dirname(os.path.realpath(sys.argv[0]))
             ffcommand = '"' + ffpath + '/ffmpeg" -i "' + \

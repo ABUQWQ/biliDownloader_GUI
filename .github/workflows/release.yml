@@ -42,6 +42,15 @@ jobs:
         run: pip install -r requirements.txt
       - name: Build with PyInstaller
         run: pyinstaller make/biliDownloader_WIN64.spec --noconfirm
+      - name: Download and bundle FFmpeg
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Invoke-WebRequest -Uri "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip" -OutFile ffmpeg.zip
+          Expand-Archive -Path ffmpeg.zip -DestinationPath ffmpeg_extracted
+          $ffmpegExe = Get-ChildItem -Path ffmpeg_extracted -Filter "ffmpeg.exe" -Recurse | Select-Object -First 1
+          if (-not $ffmpegExe) { throw "ffmpeg.exe not found in downloaded archive" }
+          Copy-Item $ffmpegExe.FullName -Destination "dist/biliDownloader_GUI/ffmpeg.exe"
       - name: Package artifact
         shell: pwsh
         run: |
@@ -71,6 +80,16 @@ jobs:
         run: pip install -r requirements.txt
       - name: Build with PyInstaller
         run: pyinstaller make/biliDownloader_Ubuntu.spec --noconfirm
+      - name: Download and bundle FFmpeg
+        run: |
+          set -e
+          curl -fL -o ffmpeg.tar.xz "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz"
+          mkdir -p ffmpeg_extracted
+          tar -xf ffmpeg.tar.xz -C ffmpeg_extracted --strip-components=1
+          FFMPEG_BIN=$(find ffmpeg_extracted -type f -name ffmpeg -perm -u+x | head -n 1)
+          if [ -z "$FFMPEG_BIN" ]; then echo "ffmpeg binary not found in downloaded archive" >&2; exit 1; fi
+          cp "$FFMPEG_BIN" dist/biliDownloader_GUI/ffmpeg
+          chmod +x dist/biliDownloader_GUI/ffmpeg
       - name: Package artifact
         run: tar -czf BiliDownloader_GUI_Linux_x64.tar.gz -C dist biliDownloader_GUI
       - uses: actions/upload-artifact@v4
@@ -91,6 +110,16 @@ jobs:
         run: pip install -r requirements.txt
       - name: Build with PyInstaller
         run: pyinstaller make/biliDownloader_MacOSX.spec --noconfirm
+      - name: Download and bundle FFmpeg
+        run: |
+          set -e
+          curl -fL -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/zip"
+          mkdir -p ffmpeg_extracted
+          unzip -o ffmpeg.zip -d ffmpeg_extracted
+          FFMPEG_BIN=$(find ffmpeg_extracted -type f -name ffmpeg | head -n 1)
+          if [ -z "$FFMPEG_BIN" ]; then echo "ffmpeg binary not found in downloaded archive" >&2; exit 1; fi
+          cp "$FFMPEG_BIN" "dist/biliDownloader_GUI.app/Contents/MacOS/ffmpeg"
+          chmod +x "dist/biliDownloader_GUI.app/Contents/MacOS/ffmpeg"
       - name: Package artifact
         run: |
           cd dist
