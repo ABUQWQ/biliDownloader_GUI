@@ -223,6 +223,78 @@ class Ui_Form(object):
 "	color: rgb(0, 0, 0);\n"
 "	background-color: rgb(255, 204, 153);\n"
 "}\n"
+"/* \u6697\u8272\u7cfb\u7edf\u4e0b\u9501\u6b7b\u539f\u751f\u63a7\u4ef6\u4e3a\u6d45\u8272 */\n"
+"QHeaderView::section{\n"
+"	color: rgb(0, 0, 0);\n"
+"	background-color: rgb(255, 255, 255);\n"
+"	border: 1px solid rgb(255, 153, "
+                        "153);\n"
+"	padding: 4px;\n"
+"}\n"
+"QSpinBox{\n"
+"	color: rgb(0, 0, 0);\n"
+"	background-color: rgb(255, 255, 255);\n"
+"	border-radius: 8px;\n"
+"	border: 2px solid rgb(255, 153, 153);\n"
+"	padding-left: 5px;\n"
+"	padding-right: 5px;\n"
+"}\n"
+"QSpinBox:hover{\n"
+"	color: rgb(0, 0, 0);\n"
+"	background-color: rgb(255, 238, 238);\n"
+"}\n"
+"QSpinBox::up-button, QSpinBox::down-button{\n"
+"	background-color: rgb(255, 255, 255);\n"
+"	border: none;\n"
+"	width: 16px;\n"
+"}\n"
+"QCheckBox::indicator{\n"
+"	width: 16px;\n"
+"	height: 16px;\n"
+"	border: 2px solid rgb(255, 153, 153);\n"
+"	border-radius: 3px;\n"
+"	background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked{\n"
+"	background-color: rgb(255, 153, 153);\n"
+"}\n"
+"QScrollBar:vertical{\n"
+"	background: rgb(255, 255, 255);\n"
+"	width: 12px;\n"
+"	margin: 0px;\n"
+"	border-radius: 6px;\n"
+"}\n"
+"QScrollBar::handle:vertical{\n"
+"	background: rgb(255, 204, 153);\n"
+"	min-height: 20px;\n"
+"	border-radius: 6px;\n"
+"}\n"
+"QScrollBar:horizontal{\n"
+"	background:"
+                        " rgb(255, 255, 255);\n"
+"	height: 12px;\n"
+"	margin: 0px;\n"
+"	border-radius: 6px;\n"
+"}\n"
+"QScrollBar::handle:horizontal{\n"
+"	background: rgb(255, 204, 153);\n"
+"	min-width: 20px;\n"
+"	border-radius: 6px;\n"
+"}\n"
+"QScrollBar::add-line, QScrollBar::sub-line{\n"
+"	width: 0px;\n"
+"	height: 0px;\n"
+"}\n"
+"QMessageBox, QMessageBox QLabel, QMessageBox QPushButton{\n"
+"	color: rgb(0, 0, 0);\n"
+"	background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QMessageBox QPushButton{\n"
+"	background-color: rgb(255, 153, 153);\n"
+"	color: rgb(255, 255, 255);\n"
+"	border-radius: 8px;\n"
+"	padding: 4px 12px;\n"
+"}\n"
 "")
         self.mainwidget = QWidget(Form)
         self.mainwidget.setObjectName(u"mainwidget")
@@ -385,7 +457,7 @@ class Ui_Form(object):
         self.spinBox.setObjectName(u"spinBox")
         self.spinBox.setGeometry(QRect(450, 520, 81, 31))
         self.spinBox.setMinimum(-10)
-        self.spinBox.setValue(-1)
+        self.spinBox.setValue(3)
         self.label_9 = QLabel(self.groupBox)
         self.label_9.setObjectName(u"label_9")
         self.label_9.setGeometry(QRect(380, 520, 72, 31))
@@ -405,6 +477,9 @@ class Ui_Form(object):
         self.btn_refreash = QPushButton(self.groupBox)
         self.btn_refreash.setObjectName(u"btn_refreash")
         self.btn_refreash.setGeometry(QRect(470, 20, 93, 31))
+        self.btn_exploreAll = QPushButton(self.mainwidget)
+        self.btn_exploreAll.setObjectName(u"btn_exploreAll")
+        self.btn_exploreAll.setGeometry(QRect(300, 20, 161, 31))
         self.btn_select_All = QPushButton(self.mainwidget)
         self.btn_select_All.setObjectName(u"btn_select_All")
         self.btn_select_All.setGeometry(QRect(760, 260, 101, 31))
@@ -448,7 +523,7 @@ class Ui_Form(object):
         self.list_NodeChoose.setSortingEnabled(__sortingEnabled)
 
         self.btn_canceldownload.setText(QCoreApplication.translate("Form", u"\u53d6\u6d88\u4e0b\u8f7d", None))
-        self.btn_downALLChoose.setText(QCoreApplication.translate("Form", u"\u4e0b\u8f7d\u5df2\u9009\u62e9\u8282\u70b9", None))
+        self.btn_downALLChoose.setText(QCoreApplication.translate("Form", u"\u4e0b\u8f7d\u5df2\u9009\u62e9\u8282\u70b9 (0)", None))
         self.btn_back.setText(QCoreApplication.translate("Form", u"\u4e0a\u4e00\u4e2a\u8282\u70b9", None))
         self.btn_next.setText(QCoreApplication.translate("Form", u"\u4e0b\u4e00\u4e2a\u8282\u70b9", None))
         self.le_nodeway.setPlaceholderText(QCoreApplication.translate("Form", u"\u6b64\u5904\u663e\u793a\u8282\u70b9\u8def\u5f84", None))
@@ -461,11 +536,12 @@ class Ui_Form(object):
         self.lab_curNID.setText(QCoreApplication.translate("Form", u"None", None))
         self.label_7.setText(QCoreApplication.translate("Form", u"\u5f53\u524d\u72b6\u6001\uff1a", None))
         self.lab_curStatus.setText(QCoreApplication.translate("Form", u"\u6b63\u5728\u52a0\u8f7d\u2026\u2026", None))
-        self.label_9.setText(QCoreApplication.translate("Form", u"\u9012\u5f52\u6df1\u5ea6", None))
-        self.cb_RSaCC.setText(QCoreApplication.translate("Form", u"\u4ece\u5f53\u524d\u8282\u70b9\u5f00\u59cb\u9012\u5f52", None))
-        self.btn_stRecu.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb\u9012\u5f52", None))
+        self.label_9.setText(QCoreApplication.translate("Form", u"\u63a2\u67e5\u6df1\u5ea6", None))
+        self.cb_RSaCC.setText(QCoreApplication.translate("Form", u"\u4ece\u5f53\u524d\u8282\u70b9\u5f00\u59cb\u63a2\u67e5", None))
+        self.btn_stRecu.setText(QCoreApplication.translate("Form", u"\u6309\u6df1\u5ea6\u63a2\u67e5", None))
         self.cb_showimage.setText(QCoreApplication.translate("Form", u"\u663e\u793a\u7f29\u7565\u56fe", None))
         self.btn_refreash.setText(QCoreApplication.translate("Form", u"\u5237\u65b0\u663e\u793a", None))
+        self.btn_exploreAll.setText(QCoreApplication.translate("Form", u"\u4e00\u952e\u63a2\u67e5\u5168\u90e8\u8282\u70b9", None))
         self.btn_select_All.setText(QCoreApplication.translate("Form", u"\u5168\u9009", None))
         self.btn_select_None.setText(QCoreApplication.translate("Form", u"\u5168\u4e0d\u9009", None))
     # retranslateUi

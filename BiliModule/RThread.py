@@ -1,7 +1,8 @@
-from PySide6.QtWidgets import QWidget, QGraphicsDropShadowEffect, QMessageBox
+from PySide6.QtWidgets import QWidget, QGraphicsDropShadowEffect
 from PySide6.QtCore import Signal, Qt, QPoint
 from UI.biliRecurInfo import Ui_Form
 from BiliWorker.extra import biliWorker_interact
+from BiliModule.interact_utils import show_light_message
 
 
 ##############################################################################
@@ -102,7 +103,7 @@ class RecurThreadWindow(QWidget, Ui_Form):
             self.close()
         else:
             self._stop_progress()
-            QMessageBox.information(self, '探查反馈', indic['data'])
+            show_light_message(self, '探查反馈', indic['data'])
             self.close()
 
     # 停止进度条忙碌动画，探查结束后满进度展示

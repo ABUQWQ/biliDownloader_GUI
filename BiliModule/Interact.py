@@ -12,6 +12,7 @@ from pyecharts.globals import CurrentConfig
 from UI.biliInteractive import Ui_Form
 from BiliWorker.extra import biliWorker_interact, BiliImgCache
 from BiliModule.RThread import RecurThreadWindow
+from BiliModule.interact_utils import count_chosen_nodes, show_light_message
 from etc import DF_Path, Echart_CDN
 
 
@@ -64,6 +65,7 @@ class biliInteractMainWindow(QWidget, Ui_Form):
         self.btn_downCurChoose.clicked.connect(self.dl_current_node)
         self.btn_downALLChoose.clicked.connect(self.dl_all_chooses)
         self.btn_stRecu.clicked.connect(self.st_recursion)
+        self.btn_exploreAll.clicked.connect(self.explore_all_nodes)
         self.btn_select_All.clicked.connect(self.select_All)
         self.btn_select_None.clicked.connect(self.select_None)
         # 初始化变量
@@ -106,6 +108,7 @@ class biliInteractMainWindow(QWidget, Ui_Form):
         self.show_current_node()
         # 递归整理节点图输出字典
         self.chartdict = self.recursion_for_chart(self.treelist_dict)
+        self._refresh_chosen_button()
         self.lab_curStatus.setText("加载完毕")
 
     # 刷新树形框的显示
@@ -162,7 +165,7 @@ class biliInteractMainWindow(QWidget, Ui_Form):
             if Path(cache_img_path).is_file():
                 img = QPixmap(cache_img_path).scaled(192, 108)
             else:
-                img = QPixmap(self.cache_Path + "/images/live_default.png").scaled(192, 108)
+                img = QPixmap(":/Icon/images/icon.png").scaled(192, 108)
             layout_img.setPixmap(img)
             layout_main.addWidget(layout_img)
         widget.setLayout(layout_main)
@@ -212,7 +215,7 @@ class biliInteractMainWindow(QWidget, Ui_Form):
             if cb.isChecked():
                 chooses.append(cb.text())
         if len(chooses) != 1:
-            QMessageBox.information(self, '信息', '你需要选择一个选项哦~')
+            show_light_message(self, '信息', '你需要选择一个选项哦~')
             return -1
         # 判断是否已探查到
         tmp = self.get_current_list(self.current_path.copy(), 0)[chooses[0]]
@@ -222,13 +225,13 @@ class biliInteractMainWindow(QWidget, Ui_Form):
                 self.current_path.append(self.pre_load)
                 self.renew_show()
             else:
-                QMessageBox.information(self, '信息', '互动视频这条路已经结束咧！')
+                show_light_message(self, '信息', '互动视频这条路已经结束咧！')
                 return -1
         else:
             # 获取已选选项node_id
             node_id = tmp['node_id']
             if not self.iv_init:
-                QMessageBox.critical(self, '对象错误', '请关闭并重新载入本窗口！')
+                show_light_message(self, '对象错误', '请关闭并重新载入本窗口！', icon='critical')
                 return -1
             img_cache = False
             if self.cb_showimage.isChecked():
@@ -242,7 +245,7 @@ class biliInteractMainWindow(QWidget, Ui_Form):
     # 回到上一节点
     def go_back_node(self):
         if len(self.current_path) <= 1:
-            QMessageBox.information(self, '信息', '你已回到最初的起点~')
+            show_light_message(self, '信息', '你已回到最初的起点~')
             return 0
         self.current_path.pop()
         self.renew_show()
@@ -257,6 +260,7 @@ class biliInteractMainWindow(QWidget, Ui_Form):
         if item.checkState(0) == Qt.Checked:
             dict_status = True
         self.recursion_dict_update(self.treelist_dict, path, 'isChoose', dict_status)
+        self._refresh_chosen_button()
 
     # 设置显示节点位置
     def item_setNodePosition(self, item, columu):
@@ -345,42 +349,74 @@ class biliInteractMainWindow(QWidget, Ui_Form):
         init_path = self.init_args["Output"] + "/" + self.base_info["vname"] + ".json"
         directory = QFileDialog.getSaveFileName(None, "选择JSON保存路径", init_path, 'JSON(*.json)')
         if directory[0] != '':
-            with open(directory[0], 'w') as f:
-                f.write(json.dumps(self.full_json, ensure_ascii=False))
+            with open(directory[0], 'w', encoding='utf-8') as f:
+                f.write(json.dumps(self.treelist_dict, ensure_ascii=False))
+
+    def _refresh_chosen_button(self):
+        chosen_count = count_chosen_nodes(self.treelist_dict)
+        self.btn_downALLChoose.setText(f"下载已选择节点 ({chosen_count})")
 
     # 下载当前节点处理函数
     def dl_current_node(self):
+        if not self.current_path:
+            show_light_message(self, '信息', '当前还没有可下载的节点哦~')
+            return
         _cur = self.current_path[-1]
+        confirm = show_light_message(
+            self,
+            '确认下载',
+            f'只下载当前节点：{_cur}？',
+            icon='question',
+            buttons=QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
         self.feedback_dict['baseInfo'] = self.base_info
         self.feedback_dict['indic'] = {}
         self.feedback_dict['indic'][_cur] = self.get_current_list(self.current_path, 1)
         self.feedback_dict['indic'][_cur]['isChoose'] = True
-        self.feedback_dict['indic'][_cur].pop('choices')
+        self.feedback_dict['indic'][_cur].pop('choices', None)
         self.close()
 
-    # 下载已选择节点
     def dl_all_chooses(self):
+        chosen_count = count_chosen_nodes(self.treelist_dict)
+        if chosen_count == 0:
+            show_light_message(self, '信息', '还没有勾选任何节点，无法开始下载。')
+            return
+        confirm = show_light_message(
+            self,
+            '确认下载',
+            f'将下载 {chosen_count} 个已选节点？',
+            icon='question',
+            buttons=QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
         self.feedback_dict['baseInfo'] = self.base_info
         self.feedback_dict['indic'] = self.treelist_dict
         self.close()
 
-    # 开始递归探查
     def st_recursion(self):
         if not self.iv_init:
-            QMessageBox.critical(self, '对象错误', '请关闭并重新载入本窗口！')
+            show_light_message(self, '对象错误', '请关闭并重新载入本窗口！', icon='critical')
             return -1
         if self.spinBox.value() == 0:
+            show_light_message(self, '探查提示', '探查深度不能为 0')
             return 0
         if self.spinBox.value() < 0:
-            recur_warning = QMessageBox.warning(self, '递归警告',
-                                                '当递归深度小于0时将探查直至所有节点结束！\n'
-                                                '1. 若该互动视频存在无限循环节点则会导致溢出；\n'
-                                                '2. 当互动视频节点分支较大时您将会等待很长时间。\n'
-                                                '请谨慎使用无限递归功能！继续请点击确认。', QMessageBox.Yes | QMessageBox.Cancel)
-            if recur_warning == QMessageBox.Cancel:
-                # print('已经取消递归')
+            recur_warning = show_light_message(
+                self,
+                '探查警告',
+                '当探查深度小于0时将探查直至所有节点结束！\n'
+                '1. 若该互动视频存在环形节点，已访问过的节点会被跳过；\n'
+                '2. 当互动视频节点分支较大时您将会等待很长时间。\n'
+                '请谨慎使用无限探查功能！继续请点击确认。',
+                icon='warning',
+                buttons=QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+            )
+            if recur_warning != QMessageBox.StandardButton.Yes:
                 return -1
-        # 开始递归操作
+        # 开始探查操作
         deep = self.spinBox.value()
         nodeID = ''
         mode = 1
@@ -392,7 +428,26 @@ class biliInteractMainWindow(QWidget, Ui_Form):
         self.RTWindow.show()
         return 0
 
-    # 全选节点
+    def explore_all_nodes(self):
+        if not self.iv_init:
+            show_light_message(self, '对象错误', '请关闭并重新载入本窗口！', icon='critical')
+            return -1
+        confirm = show_light_message(
+            self,
+            '一键探查',
+            '将从根节点开始无限探查全部节点。\n'
+            '环形节点会被跳过，节点很多时可能需要较长时间。\n'
+            '确认开始探查吗？',
+            icon='question',
+            buttons=QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return -1
+        self.RTWindow = RecurThreadWindow(1, self.iv_init, '', -1)
+        self.RTWindow._RSignal.connect(self.Recur_Slot_Handle)
+        self.RTWindow.show()
+        return 0
+
     def select_All(self):
         # print(self.treenode_select(self.treelist_dict, True))
         self.treelist_dict = self.treenode_select(self.treelist_dict, True)
@@ -475,7 +530,7 @@ class biliInteractMainWindow(QWidget, Ui_Form):
                 tmp.append(self.pre_load)
                 self.treelist_dict = self.recursion_dict_update(self.treelist_dict, tmp, 'choices', indict['nodelist'])
                 self.lab_curStatus.setText('加载完毕')
-                QMessageBox.information(self, '信息', '互动视频这条路已经结束咧！')
+                show_light_message(self, '信息', '互动视频这条路已经结束咧！')
         elif indict['code'] == -1:
             self.lab_curStatus.setText(indict['data'])
         else:

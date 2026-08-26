@@ -4,6 +4,7 @@
   </qresource>
   <qresource prefix="Icon">
     <file>images/bilidownloader.ico</file>
+    <file>images/icon.png</file>
   </qresource>
   <qresource prefix="combo">
     <file>images/dd1.png</file>
