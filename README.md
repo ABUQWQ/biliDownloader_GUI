@@ -47,14 +47,6 @@
 * 离线测试命令：`python -m unittest discover -s "tests" -v`
 * 当前 GUI 已迁移至 PySide6
 
-## 🚀发版 Release
-
-版本号以 git tag（如 `V1.8.2`）为唯一来源，无需手动修改代码中的版本号：
-
-* 推送 `V*` 标签或在 Actions 手动触发 `Build and Release`，CI 会先运行 `make/sync_version.py` 自动同步版本号与构建日期（取构建当天），再构建并发布 Windows/Linux/macOS 三平台安装包
-* 本地打包 Windows 安装器（`win32setup.nsi`）前，先运行一次 `python make/sync_version.py V<x.y.z>` 同步版本号
-* 若为补丁版本，记得在 `MIGRATION.md` 补充对应版本的发版说明（同步脚本会自动检查并提醒）
-
 ## ⚖声明 Declaration
 
 * 本项目受GPL-3.0许可协议保护，所有程序仅用于学习与交流，请勿用于任何商业用途！

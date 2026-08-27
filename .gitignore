@@ -27,3 +27,13 @@ docs/API.md
 build/
 dist/
 *.spec.bak
+# AI assistant / local test leftovers
+.serena/
+fresh_test_venv/
+build_test/
+build_test2/
+job_log.txt
+/biliDownloader_GUI.spec
+
+# Local-only AI guide (not for the repo)
+AI说明.md
