@@ -69,6 +69,10 @@ def main() -> int:
         default=datetime.date.today().strftime("%Y/%m/%d"),
         help="构建日期，格式 yyyy/mm/dd，默认为今天",
     )
+    # CI 的 Windows runner 控制台可能是 cp1252，中文输出会直接抛 UnicodeEncodeError
+    sys.stdout.reconfigure(errors="replace")
+    sys.stderr.reconfigure(errors="replace")
+
     args = parser.parse_args()
 
     match = TAG_PATTERN.match(args.tag)
