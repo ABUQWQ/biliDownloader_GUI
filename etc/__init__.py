@@ -1,7 +1,7 @@
 import os, sys
 
 # 发布版本信息
-Release_INFO = ["1.8.0", "2026/08/19"]
+Release_INFO = ["1.8.2", "2026/08/26"]
 
 # Debug Info Structure
 # [Exception]BiliWorker.extra.CheckLatest.is_latest: My Version is {}, Latest Version is {}."

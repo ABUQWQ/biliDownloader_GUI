@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "BiliDownloader"
-!define PRODUCT_VERSION "1.7.2"
+!define PRODUCT_VERSION "1.8.2"
 !define PRODUCT_PUBLISHER "��������Bվͬ����"
 !define PRODUCT_WEB_SITE "https://zmtblog.xdkd.ltd"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\biliDownloader_GUI.exe"
